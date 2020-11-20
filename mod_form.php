@@ -81,6 +81,24 @@ class mod_customcert_mod_form extends moodleform_mod {
             $firstoption = empty($firstoption) ? 'emailothers' : $firstoption;
         }
 
+        //////////////////////
+        // added by Timo Pitt
+        $arrcustomfields = \availability_profile\condition::get_custom_profile_fields();
+        $customfields = array(0 => "- ".get_string('no')." -");
+        foreach ($arrcustomfields as $key => $customfield) {
+            $customfields[$customfield->id] = $customfield->name;
+        }
+        \core_collator::asort($customfields);
+
+        if (has_capability('mod/customcert:manageemailuserfield', $this->get_context())) {
+            $mform->addElement('select', 'emailuserfield', get_string('emailuserfield', 'customcert'), $customfields);
+            $mform->addHelpButton('emailuserfield', 'emailuserfield', 'customcert');
+            $mform->setDefault('emailuserfield', get_config('customcert', 'emailuserfield'));
+            $mform->setType('emailuserfield', PARAM_TEXT);
+            $firstoption = empty($firstoption) ? 'emailuserfield' : $firstoption;
+        }
+        //////////////////////
+
         if (has_capability('mod/customcert:manageverifyany', $this->get_context())) {
             $mform->addElement('selectyesno', 'verifyany', get_string('verifycertificateanyone', 'customcert'));
             $mform->addHelpButton('verifyany', 'verifycertificateanyone', 'customcert');
@@ -203,6 +221,10 @@ class mod_customcert_mod_form extends moodleform_mod {
             'emailstudents' => 'mod/customcert:manageemailstudents',
             'emailteachers' => 'mod/customcert:manageemailteachers',
             'emailothers' => 'mod/customcert:manageemailothers',
+            ///////////////////////
+            // added by Timo Pitt 
+            'emailuserfield' => 'mod/customcert:manageemailuserfield',
+            ///////////////////////
             'verifyany' => 'mod/customcert:manageverifyany',
             'requiredtime' => 'mod/customcert:managerequiredtime',
             'protection_print' => 'mod/customcert:manageprotection',
